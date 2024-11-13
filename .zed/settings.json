@@ -1,0 +1,17 @@
+{
+    "languages": {
+        "C++": {}
+    },
+    "lsp": {
+        "clang": {
+            "binary": {
+                "arguments": [
+                    "fallbackFlags",
+                    "-I{sourceRoot}/libhttp/include",
+                    "-I{sourceRoot}/cJSON"
+                ],
+                "path": "/usr/bin/clangd"
+            }
+        }
+    }
+}
