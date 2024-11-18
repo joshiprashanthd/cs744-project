@@ -1,32 +1,56 @@
-LIBHTTP_PATH=./civetweb
+DEPENDENCIES := ./dependencies
+CIVETWEB_LIB := libcivetweb.a
 
-CLIBS=-lpthread -ldl
-CFLAGS=-I$(LIBHTTP_PATH)include
+CXX         := g++
+CXX_FLAGS   := -Wall -Wextra -std=c++17 -ggdb $(COPT)
 
-CIVETWEB_LIB = libcivetweb.a
+BIN         := bin
+SRC_DIR     := src
+OBJ_DIR     := obj
+SRC         := $(shell find $(SRC_DIR) -type f -name '*.cpp')  # Recursively find all .cpp files
+OBJS        := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC))
+INCLUDE     := -Iinclude -Ilib \
+ -I/opt/homebrew/include/mongocxx/v_noabi/ \
+ -I/opt/homebrew/include/bsoncxx/v_noabi/ \
+ -I$(DEPENDENCIES)/core/include \
+ -I$(DEPENDENCIES)/civetweb/include \
+ -I$(DEPENDENCIES)/json/include \
+ -I$(DEPENDENCIES)/HTTPRequest/include
+LIB         := lib
 
-CC=g++
+LIBRARIES   := -L/opt/homebrew/lib/ -lmongocxx -lbsoncxx -lpthread
+EXECUTABLE  := main
 
 
-all: platform publisher subscriber
+all: $(BIN)/$(EXECUTABLE)
 
-platform: $(CIVETWEB_LIB)
-	$(CC) platform.cpp utils.cpp ./cJSON/cJSON.c -o platform $(CIVETWEB_LIB) $(CLIBS) $(CFLAGS)
 
-publisher: $(CIVETWEB_LIB)
-	$(CC) publisher.cpp utils.cpp ./cJSON/cJSON.c -o publisher $(CIVETWEB_LIB) $(CLIBS) $(CFLAGS)
+run: clean all
+	clear
+	./$(BIN)/$(EXECUTABLE)
 
-subscriber: $(CIVETWEB_LIB)
-	$(CC) subscriber.cpp utils.cpp ./cJSON/cJSON.c -o subscriber $(CIVETWEB_LIB) $(CLIBS) $(CFLAGS)
 
-$(CIVETWEB_LIB):
-	$(MAKE) -C $(LIBHTTP_PATH) clean lib
-	cp $(LIBHTTP_PATH)/$(CIVETWEB_LIB) .
+$(BIN)/$(EXECUTABLE): $(OBJS) $(LIB)/$(CIVETWEB_LIB) | $(BIN)
+	$(CXX) $(CXX_FLAGS) $(INCLUDE) -L$(LIB) $^ -o $@ $(LIBRARIES)
 
-debug: $(CIVETWEB_LIB) functions.c cflask.c
-	$(CC) -g -o cflask cflask.c functions.c  $(CIVETWEB_LIB) $(CLIBS) $(CFLAGS)
+# Compile each .cpp file into an .o file
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+	@mkdir -p $(@D)  # Ensure subdirectories in obj/ exist
+	$(CXX) $(CXX_FLAGS) $(INCLUDE) -c $< -o $@
 
+
+$(LIB)/$(CIVETWEB_LIB): 
+	$(MAKE) -C $(DEPENDENCIES)/civetweb clean lib
+	cp $(DEPENDENCIES)/civetweb/$(CIVETWEB_LIB) $(LIB)
+
+# Ensure the bin and obj directories exist
+$(BIN) $(OBJ_DIR):
+	mkdir -p $@
+
+# Clean target
 clean:
-	rm -f platform publisher subscriber
+	-rm -rf $(BIN)/*
+	-rm -rf $(OBJ_DIR)/*
+	-rm -f $(LIB)/$(CIVETWEB_LIB)  # Clean CivetWeb only if needed
 
-.PHONY: all clean
+.PHONY: all clean run
