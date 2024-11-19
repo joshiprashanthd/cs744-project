@@ -10,11 +10,13 @@
 #include <dependency-injection-container.hpp>
 #include <memory>
 #include "mongocxx/instance.hpp"
+#include <subscription-repository.h>
+#include <message-processor.h>
 
 #define PORT 3000
 #define NUM_THREADS 10
 
-void registerRoutes(messagebrokerv1::Router *router);
+void registerRoutes(messagebrokerv1::Router *router, messagebrokerv1::MessageProcessor *message_processor);
 void configureServices();
 
 int main(int argc, char **argv)
@@ -23,6 +25,7 @@ int main(int argc, char **argv)
     struct mg_context *ctx;
     struct mg_callbacks callbacks;
     messagebrokerv1::Router *router{nullptr};
+    auto message_processor = new messagebrokerv1::MessageProcessor();
 
     auto listening_port = argc > 1 ? argv[1] : std::to_string(PORT);
     auto num_threads = argc > 2 ? argv[2] : std::to_string(NUM_THREADS);
@@ -45,7 +48,7 @@ int main(int argc, char **argv)
     std::cout << messagebrokerv1::formatLogMessage("Server Started at port " + listening_port + "!") << std::endl;
 
     router = new messagebrokerv1::Router(ctx);
-    registerRoutes(router);
+    registerRoutes(router, message_processor);
 
     std::cout << messagebrokerv1::formatLogMessage("Press any key to stop the server...") << std::endl;
     getchar();
@@ -62,6 +65,7 @@ void configureServices()
     try
     {
         messagebrokerv1::DependencyInjectionContainer::registerObject(std::make_shared<messagebrokerv1::ServiceRepository>(MONGO_URI, MONGO_DATABASE_NAME));
+        messagebrokerv1::DependencyInjectionContainer::registerObject(std::make_shared<messagebrokerv1::SubscriptionRepository>(MONGO_URI, MONGO_DATABASE_NAME));
     }
     catch (const std::exception &e)
     {
@@ -69,7 +73,11 @@ void configureServices()
     }
 }
 
-void registerRoutes(messagebrokerv1::Router *router)
+void registerRoutes(messagebrokerv1::Router *router, messagebrokerv1::MessageProcessor *message_processor)
 {
-    router->registerRoute("/services/register", messagebrokerv1::ServiceHandler::serviceRegister);
+    router->registerRoute("/services/register", messagebrokerv1::ServiceHandler::serviceRegister, message_processor);
+    router->registerRoute("/services/*/topics/publish", messagebrokerv1::ServiceHandler::publishTopic, message_processor);
+    router->registerRoute("/services/*/topics/*/send", messagebrokerv1::ServiceHandler::addMessage, message_processor);
+    router->registerRoute("/services/*/topics/*/subscriptions/subscribe", messagebrokerv1::ServiceHandler::subscribeTopic, message_processor);
+    router->registerRoute("/services/*/topics/*/subscriptions/*/messages", messagebrokerv1::ServiceHandler::fetchMessages, message_processor);
 }

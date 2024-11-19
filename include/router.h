@@ -12,6 +12,6 @@ namespace messagebrokerv1
 
     public:
         Router(struct mg_context *ctx);
-        void registerRoute(const std::string &route, mg_request_handler handler);
+        void registerRoute(const std::string &route, mg_request_handler handler, void *cbdata);
     };
 }

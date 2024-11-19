@@ -14,5 +14,7 @@ namespace messagebrokerv1
     public:
         ServiceRepository(std::string uri, std::string databaseName);
         std::string AddService(ServiceRegisterRequestDTO request);
+        bool AddTopic(std::string serviceId, std::string topic);
+        bool AddSubscription(std::string serviceId, std::string subscriptionId);
     };
 }

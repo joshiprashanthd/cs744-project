@@ -2,7 +2,7 @@ DEPENDENCIES := ./dependencies
 CIVETWEB_LIB := libcivetweb.a
 
 CXX         := g++
-CXX_FLAGS   := -Wall -Wextra -std=c++17 -ggdb $(COPT)
+CXX_FLAGS   := -Wall -Wextra -std=c++17 -ggdb $(COPT) -DNO_FILES -DMG_EXPERIMENTAL_INTERFACES
 
 BIN         := bin
 SRC_DIR     := src
@@ -40,7 +40,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 
 
 $(LIB)/$(CIVETWEB_LIB): 
-	$(MAKE) -C $(DEPENDENCIES)/civetweb clean lib
+	$(MAKE) -C $(DEPENDENCIES)/civetweb WITH_IPV6=1 WITH_WEBSOCKET=1 COPT='-DNO_SSL -DMG_EXPERIMENTAL_INTERFACES' clean lib
 	cp $(DEPENDENCIES)/civetweb/$(CIVETWEB_LIB) $(LIB)
 
 # Ensure the bin and obj directories exist
