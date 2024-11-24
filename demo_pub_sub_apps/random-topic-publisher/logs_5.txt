@@ -1,0 +1,23 @@
+Publisher started!
+Total Messages to Send: 5
+Choosing topic: test_topic_2
+[MessageId: 166dfd5c-2ff4-4759-87f6-9e402c6930c1] + Sending message: test message 0
+2024-11-24 14:08:47[MessageId: 166dfd5c-2ff4-4759-87f6-9e402c6930c1] Message sent!
+Choosing topic: test_topic_1
+[MessageId: 8e01c5c7-3439-4578-82cc-2616d4b33199] + Sending message: test message 1
+2024-11-24 14:08:49[MessageId: 8e01c5c7-3439-4578-82cc-2616d4b33199] Message sent!
+Choosing topic: test_topic_2
+[MessageId: 8406c3a7-497e-4c18-989d-50ef9ca3278f] + Sending message: test message 2
+2024-11-24 14:08:51[MessageId: 8406c3a7-497e-4c18-989d-50ef9ca3278f] Message sent!
+Choosing topic: test_topic_1
+[MessageId: 03251263-9544-4b0a-8186-92d4f2f08059] + Sending message: test message 3
+2024-11-24 14:08:53[MessageId: 03251263-9544-4b0a-8186-92d4f2f08059] Message sent!
+Choosing topic: test_topic_2
+[MessageId: ded2dbb2-8ff9-467a-b6d2-8ce0c8514c23] + Sending message: test message 4
+2024-11-24 14:08:55[MessageId: ded2dbb2-8ff9-467a-b6d2-8ce0c8514c23] Message sent!
+Choosing topic: test_topic_1
+[MessageId: 3a2a0959-9c75-4044-a970-8169df1d86c3] + Sending message: test message 5
+2024-11-24 14:08:57[MessageId: 3a2a0959-9c75-4044-a970-8169df1d86c3] Message sent!
+Publisher stopped!
+Total Messages sent to test_topic_1 are 3
+Total Messages sent to test_topic_2 are 3

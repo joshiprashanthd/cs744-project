@@ -1,6 +1,10 @@
 #include <iostream>
 #include "civetweb.h"
 #include "dtos.h"
+#include "models.h"
+#include <chrono>
+#include <ctime>
+#include <iomanip>
 
 #define PORT 4000
 #define NUM_THREADS 10
@@ -22,12 +26,17 @@ static int messages_event_handler(struct mg_connection *conn, void *cbdata)
     int dlen = mg_read(conn, content, request->content_length);
     content[dlen] = '\0';
 
+    auto now = std::chrono::system_clock::now();
+    std::time_t current_time = std::chrono::system_clock::to_time_t(now);
     std::cout << "New Message Received" << std::endl;
 
     try
     {
         auto payload = json::parse(content);
-        std::cout << "Message: " << payload.dump() << std::endl;
+        auto message = payload.template get<subscriberv1::Message>();
+        std::cout << "MessageId: " << message.getMessageId() << std::endl;
+        std::cout << "Message Received at time: " << std::put_time(std::localtime(&current_time), "%Y-%m-%d %H:%M:%S");
+        std::cout << "Full Message: " << payload.dump() << std::endl;
 
         auto status_response = new subscriberv1::GenericResponseDTO(true, "Message Received Successfully");
         json response = *status_response;

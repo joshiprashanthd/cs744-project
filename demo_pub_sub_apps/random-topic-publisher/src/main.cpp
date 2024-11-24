@@ -5,6 +5,9 @@
 #include "HTTPRequest.hpp"
 #include "dtos.h"
 #include "models.h"
+#include <chrono>
+#include <ctime>
+#include <iomanip>
 
 const std::string PLATFORM_BASE_URL = "http://localhost:3000/api/v1";
 
@@ -30,6 +33,7 @@ int main(int argc, char **argv)
     int messages_cnt = atoi(argv[1]);
     std::cout << "Total Messages to Send: " << messages_cnt << std::endl;
     int i = 0;
+    int topicOneMessagesCnt = 0, topicTwoMessagesCnt = 0;
     while (i <= messages_cnt)
     {
         int idx = generateRandomNumber(topics.size() - 1);
@@ -38,12 +42,25 @@ int main(int argc, char **argv)
         std::cout << "[MessageId: " << message_id << "] + Sending message: test message " << i << std::endl;
         auto strMsgId = std::to_string(i);
         sendMessage(serviceId, topics[idx], message_id, "test message " + strMsgId);
-        std::cout << "[MessageId: " << message_id << "]" << " Message sent!" << std::endl;
+        auto now = std::chrono::system_clock::now();
+        std::time_t current_time = std::chrono::system_clock::to_time_t(now);
+
+        std::cout << std::put_time(std::localtime(&current_time), "%Y-%m-%d %H:%M:%S") << "[MessageId: " << message_id << "]" << " Message sent!" << std::endl;
+        if (idx == 0)
+        {
+            topicOneMessagesCnt++;
+        }
+        else
+        {
+            topicTwoMessagesCnt++;
+        }
         i++;
         sleep(2);
     }
 
     std::cout << "Publisher stopped!" << std::endl;
+    std::cout << "Total Messages sent to " << topics[0] << " are " << topicOneMessagesCnt << std::endl;
+    std::cout << "Total Messages sent to " << topics[1] << " are " << topicTwoMessagesCnt << std::endl;
 
     return EXIT_SUCCESS;
 }

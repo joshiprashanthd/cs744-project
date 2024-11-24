@@ -1,17 +1,26 @@
 #include <iostream>
 #include "models.h"
 #include "HTTPRequest.hpp"
+#include <chrono>
+#include <ctime>
+#include <iomanip>
 
 const std::string PLATFORM_BASE_URL = "http://localhost:3000/api/v1";
 
 std::vector<subscriberv1::Message> pollMessages(std::string serviceId, std::string topicName, std::string subscriptionName);
 
-int main()
+int main(int argc, char **argv)
 {
+    if (argc != 3)
+    {
+        fprintf(stderr, "Usage: %s <topic_name> <subscription_name>\n", argv[0]);
+        exit(1);
+    }
+
     std::cout << "Subscriber started!" << std::endl;
     std::string serviceId = "6742bb3a6d07c062720981d2";
-    std::string topicName = "test_topic_1";
-    std::string subscriptionName = "test_topic_1_sub_1";
+    std::string topicName = argv[1];
+    std::string subscriptionName = argv[2];
 
     while (true)
     {
@@ -22,8 +31,11 @@ int main()
             std::cout << messsages.size() << " new messages received!" << std::endl;
             for (auto message : messsages)
             {
+                auto now = std::chrono::system_clock::now();
+                std::time_t current_time = std::chrono::system_clock::to_time_t(now);
                 json message_json = message;
                 std::cout << "MessageId: " << message.getMessageId() << std::endl;
+                std::cout << "Message Received at time: " << std::put_time(std::localtime(&current_time), "%Y-%m-%d %H:%M:%S");
                 std::cout << "Full Message: " << message_json.dump() << std::endl;
             }
         }
