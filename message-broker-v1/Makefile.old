@@ -1,0 +1,38 @@
+# DEPENDENCIES := ./dependencies
+# CIVETWEB_LIB := libcivetweb.a
+
+# CXX		  := g++
+# CXX_FLAGS := -Wall -Wextra -std=c++17 -ggdb $(COPT)
+
+# BIN		:= bin
+# SRC		:= src
+# INCLUDE	:= -Iinclude -Ilib \
+#  -I/opt/homebrew/include/mongocxx/v_noabi/ \
+#  -I/opt/homebrew/include/bsoncxx/v_noabi/ \
+#  -I$(DEPENDENCIES)/core/include \
+#  -I$(DEPENDENCIES)/civetweb/include \
+#  -I$(DEPENDENCIES)/json/include \
+#  -I$(DEPENDENCIES)/HTTPRequest/include
+# LIB		:= lib
+
+# LIBRARIES	:= -L/opt/homebrew/lib/ -lmongocxx -lbsoncxx -lpthread
+# EXECUTABLE	:= main
+
+# all: $(BIN)/$(EXECUTABLE)
+
+# run: clean all
+# 	clear
+# 	./$(BIN)/$(EXECUTABLE)
+
+# $(BIN)/$(EXECUTABLE): $(SRC)/*.cpp $(CIVETWEB_LIB)
+# 	$(CXX) $(CXX_FLAGS) -I$(INCLUDE) -L$(LIB) $(SRC)/*.cpp -o $@ $(LIB)/$(CIVETWEB_LIB) $(LIBRARIES)
+
+# $(CIVETWEB_LIB):
+# 	$(MAKE) -C $(DEPENDENCIES)/civetweb clean lib
+# 	cp $(DEPENDENCIES)/civetweb/$(CIVETWEB_LIB) $(LIB)
+
+# clean:
+# 	-rm -rf $(BIN)/*
+# 	-rm -rf $(LIB)/*
+
+# .PHONY: all clean
